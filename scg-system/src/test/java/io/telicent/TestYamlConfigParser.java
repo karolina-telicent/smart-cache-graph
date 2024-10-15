@@ -258,6 +258,36 @@ class TestYamlConfigParser {
         assertTrue(equals);
     }
 
+    @Test
+    void yaml_config_abac_ttl() {
+        // given
+        List<String> arguments = List.of("--conf",DIR + "/yaml/config-abac-tim.ttl");
+        // when
+        server = construct(arguments.toArray(new String[0])).start();
+        RowSetRewindable actualResponseRSR;
+        load(server);
+        actualResponseRSR = query(server, "u1");
+
+        // then
+        boolean equals = ResultSetCompare.isomorphic(expectedRSR, actualResponseRSR);
+        assertTrue(equals);
+    }
+
+    @Test
+    void yaml_config_abac_absolute_paths() {
+        // given
+        List<String> arguments = List.of("--conf",DIR + "/yaml/config-abac-absolute-paths.yaml");
+        // when
+        server = construct(arguments.toArray(new String[0])).start();
+        RowSetRewindable actualResponseRSR;
+        load(server);
+        actualResponseRSR = query(server, "u1");
+
+        // then
+        boolean equals = ResultSetCompare.isomorphic(expectedRSR, actualResponseRSR);
+        assertTrue(equals);
+    }
+
 
     @Test
     void yaml_config_kafka_connector() {

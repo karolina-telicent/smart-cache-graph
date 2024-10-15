@@ -7,7 +7,7 @@ PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX tdb2:   <http://jena.apache.org/2016/tdb#>
 
 :dataset-under  rdf:type  ja:MemoryDataset;
-        ja:data   "src/test/files/yaml/data-and-labels.trig" .
+        ja:data   <file:/Users/karolinakadzielawa/smart-cache-graph/scg-system/src/test/files/yaml/data-and-labels.trig> .
 
 :abac-db  rdf:type        authz:DatasetAuthz;
         authz:attributes  <file:/Users/karolinakadzielawa/smart-cache-graph/scg-system/src/test/files/yaml/attribute-store.ttl>;

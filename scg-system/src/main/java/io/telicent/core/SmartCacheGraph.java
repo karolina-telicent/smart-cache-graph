@@ -32,7 +32,7 @@ import org.apache.jena.fuseki.main.FusekiServer;
 import org.apache.jena.fuseki.main.cmds.FusekiMain;
 import org.apache.jena.fuseki.main.sys.FusekiModule;
 import org.apache.jena.fuseki.main.sys.FusekiModules;
-import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import records.ConfigStruct;
@@ -42,6 +42,8 @@ import records.YAMLConfigParser;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +51,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static records.ConfigConstants.attributes;
 import static records.ConfigConstants.log;
 
 public class SmartCacheGraph {
@@ -91,6 +94,21 @@ public class SmartCacheGraph {
                         ConfigStruct configStruct = ycp.runYAMLParser(configPath);
                         Model configModel = rcg.createRDFModel(configStruct);
 
+                        //TODO
+                        // find absolute paths
+                        /*StmtIterator iter = configModel.listStatements();
+                        while (iter.hasNext()) {
+                            Statement stmt = iter.nextStatement();
+                            RDFNode object = stmt.getObject();
+                            if (object.isURIResource() && object.asResource().getURI().startsWith("file:")) {
+                                String oldFilePathURI = object.asResource().getURI();
+                                String updatedFilePathURI = convertToAbsolutePathURI(oldFilePathURI);
+                                log.info("NEW PATH: " + updatedFilePathURI);
+                                Resource newFilePathResource = configModel.createResource(updatedFilePathURI);
+                                configModel.remove(stmt);
+                                configModel.add(stmt.getSubject(), stmt.getPredicate(), newFilePathResource);
+                            }
+                        }*/
                         File rdfConfigPath = File.createTempFile("RDF.state", ".ttl");
                         rdfConfigPath.deleteOnExit();
 
@@ -178,5 +196,13 @@ public class SmartCacheGraph {
 
     private static boolean isInitialCompactionEnabled() {
         return !Configurator.get(FMod_InitialCompaction.DISABLE_INITIAL_COMPACTION, Boolean::parseBoolean, false);
+    }
+
+    private static String convertToAbsolutePathURI(String fileUri) {
+        String relativePath = fileUri.substring(5);
+        Path absolutePath = Paths.get(relativePath).toAbsolutePath();
+        //File file = new File(relativePath);
+        //String absolutePath = file.getAbsolutePath();
+        return "file://" + absolutePath;
     }
 }
